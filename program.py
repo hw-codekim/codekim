@@ -1,7 +1,12 @@
+
 import requests
 import json
 import xmltodict
 import html
+import os
+
+# github라는 오픈소스 공간에서 SLACK_WEBHOOK_URL을 암호화하기 위한 코드
+SLACK_WEBHOOK_URL = os.environ.get('SLACK_WEBHOOK_URL')
 
 def makePayloadItem(newsItem):
   return      {
@@ -12,30 +17,28 @@ def makePayloadItem(newsItem):
           "text": f"{html.unescape(newsItem['descript'])}",
           "fields": [
           {
-            	"type": "mrkdwn",
+                "type": "mrkdwn",
               "title": "출처",
               "value": f"{newsItem['source']}",
               "short": 'true'
           },
           {
-            	"type": "mrkdwn",
+                "type": "mrkdwn",
               "title": "*원문*",
               "value": f"<{newsItem['url']}|뉴스 링크>",
               "short": 'true'
           },
           {
-			        "type": "divider"
-		      }
+                    "type": "divider"
+              }
           ]
       }
 
 def callWebhook (payload):
-  URL = 'https://hooks.slack.com/services/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' 
   headers = {
     'Content-type' : 'application/json',
   }
-  res = requests.post(URL, headers=headers, json=payload)
-
+  res = requests.post(SLACK_WEBHOOK_URL, headers=headers, json=payload)
   print(res.text)
 
 def getNewsFromRss():
@@ -101,7 +104,6 @@ def main():
       },
     ]}
   )
-
   callWebhook(cardList)
 
 if __name__ == "__main__":
